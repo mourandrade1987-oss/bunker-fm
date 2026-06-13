@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FM — Bunker</title>
+<style>
+:root {
+  --navy:#1A2744; --navy2:#2A3F6B;
+  --amber:#B85C38; --green:#27AE60;
+  --blue:#3a5a8a; --purple:#534AB7;
+  --text:#1A1A2E; --text2:#5a6478;
+  --border:#DDE0E8; --bg:#F0F2F7; --gray-l:#f4f5f8;
+  --white:#FFFFFF;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
+
+/* HEADER */
+.site-header{background:var(--navy);position:sticky;top:0;z-index:100;padding:0 32px;display:flex;align-items:center;gap:14px;height:60px;}
+.header-icon{width:36px;height:36px;background:var(--amber);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:white;flex-shrink:0;}
+.header-title{font-size:17px;font-weight:800;color:white;}
+.header-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px;}
+.header-date{margin-left:auto;font-size:11px;color:rgba(255,255,255,.35);text-align:right;}
+
+/* NAV */
+.site-nav{background:rgba(255,255,255,.06);border-top:1px solid rgba(255,255,255,.08);padding:0 32px;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;}
+.site-nav::-webkit-scrollbar{display:none;}
+.nav-btn{padding:12px 16px;font-size:12px;font-weight:500;color:rgba(255,255,255,.5);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;transition:color .15s,border-color .15s;}
+.nav-btn:hover{color:white;}
+.nav-btn.active{color:white;border-bottom-color:var(--amber);font-weight:700;}
+
+/* CONTENT */
+.content{padding:28px 32px 64px;max-width:1100px;}
+.tab{display:none;}.tab.active{display:block;}
+
+/* SECTION TITLE */
+.sec-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);margin:28px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.sec-title:first-child{margin-top:0;}
+
+/* CARDS GRID */
+.cards-g{display:grid;gap:14px;}
+.cards-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr));}
+.cards-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
+.cards-4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr));}
+
+/* CARD */
+.card{background:white;border-radius:12px;border:1px solid var(--border);overflow:hidden;}
+.card-pad{padding:18px 20px;}
+.card-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.card-text{font-size:13px;color:var(--text2);line-height:1.6;}
+.card-top{height:4px;}
+.ct-amber{background:var(--amber);}.ct-blue{background:var(--blue);}.ct-green{background:var(--green);}.ct-purple{background:var(--purple);}
+
+/* METRIC */
+.metric-big{font-size:36px;font-weight:900;color:var(--navy);line-height:1;margin-bottom:4px;}
+.metric-lbl{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;}
+
+/* BADGE */
+.bdg{display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;border-radius:99px;letter-spacing:.04em;}
+.bdg-amber{background:rgba(184,92,56,.1);color:var(--amber);}
+.bdg-blue{background:rgba(58,90,138,.1);color:var(--blue);}
+.bdg-green{background:rgba(39,174,96,.1);color:var(--green);}
+.bdg-purple{background:rgba(83,74,183,.1);color:var(--purple);}
+.bdg-gray{background:var(--gray-l);color:var(--text2);}
+.bdg-red{background:rgba(192,57,43,.12);color:#c0392b;}
+
+/* FORM */
+label{display:block;font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;}
+input[type="text"],input[type="date"],textarea,select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;color:var(--text);background:white;outline:none;transition:border-color .2s;}
+input:focus,textarea:focus,select:focus{border-color:var(--amber);}
+textarea{resize:vertical;min-height:80px;}
+.form-row{display:grid;gap:12px;margin-bottom:12px;}
+.form-2{grid-template-columns:1fr 1fr;}.form-3{grid-template-columns:2fr 1fr 1fr;}.form-4{grid-template-columns:2fr 1fr 1fr 1fr;}
+
+/* BTN */
+.btn{display:inline-block;padding:8px 18px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:background .15s;}
+.btn-primary{background:var(--navy);color:white;}.btn-primary:hover{background:var(--amber);}
+.btn-sm{padding:6px 13px;font-size:11px;}
+.btn-ghost{background:var(--gray-l);color:var(--text2);}.btn-ghost:hover{background:var(--border);}
+.btn-danger{background:rgba(192,57,43,.08);color:#c0392b;}.btn-danger:hover{background:#c0392b;color:white;}
+.btn-check{background:rgba(39,174,96,.1);color:var(--green);}.btn-check:hover{background:var(--green);color:white;}
+
+/* LIST */
+.item-list{list-style:none;}
+.item-list li{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.item-list li:last-child{border-bottom:none;}
+.item-body{flex:1;}
+.item-title{font-size:14px;color:var(--text);font-weight:500;margin-bottom:2px;}
+.item-sub{font-size:11px;color:var(--text2);}
+.item-actions{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+
+/* NOTA */
+.nota{background:var(--gray-l);border-radius:8px;border-left:3px solid var(--amber);padding:12px 16px;margin-bottom:10px;}
+.nota-data{font-size:10px;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em;}
+.nota-texto{font-size:13px;color:var(--text);line-height:1.6;}
+
+/* LEITURA */
+.leitura-card{background:white;border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.leitura-titulo{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:3px;font-style:italic;}
+.leitura-autor{font-size:11px;color:var(--text2);margin-bottom:6px;}
+
+/* IDEIA CARD */
+.ideia-card{background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.ideia-header{background:var(--navy);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.ideia-titulo{font-size:13px;font-weight:700;color:white;flex:1;}
+.ideia-body{padding:14px 16px;}
+.ideia-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-top:8px;}
+
+/* AGENDA */
+.comp-item{background:white;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px;}
+.comp-data{font-family:monospace;font-size:12px;font-weight:700;color:var(--amber);min-width:90px;flex-shrink:0;margin-top:2px;}
+.comp-body{flex:1;}
+.comp-titulo{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.comp-meta{font-size:11px;color:var(--text2);}
+.comp-actions{display:flex;gap:6px;flex-shrink:0;}
+
+/* TAREFA */
+.tarefa-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.tarefa-item:last-child{border-bottom:none;}
+.tarefa-check{width:18px;height:18px;cursor:pointer;accent-color:var(--amber);flex-shrink:0;}
+.tarefa-texto{flex:1;font-size:14px;color:var(--text);}
+.tarefa-texto.done{text-decoration:line-through;color:var(--text2);}
+
+/* EMPTY */
+.empty{color:var(--text2);font-size:12px;padding:14px 0;font-style:italic;}
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0;}
+
+/* PROJETO HEADER */
+.proj-header{background:var(--navy);border-radius:12px;padding:20px 24px;margin-bottom:24px;}
+.proj-eyebrow{font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
+.proj-titulo{font-size:18px;font-weight:800;color:white;}
+.proj-sub{font-size:13px;color:rgba(255,255,255,.55);margin-top:4px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-wrap" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--navy);position:fixed;inset:0;z-index:9999;">
+  <div style="background:white;border-radius:14px;padding:44px 40px;width:100%;max-width:380px;text-align:center;">
+    <div style="width:56px;height:56px;background:var(--amber);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:18px;font-weight:900;color:white;">FM</div>
+    <div style="font-size:20px;font-weight:800;color:var(--navy);margin-bottom:4px;">Bunker</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:24px;">Acesso restrito</div>
+    <input type="password" id="senha-input" placeholder="Senha" style="margin-bottom:12px;text-align:center;" onkeydown="if(event.key==='Enter')checkSenha()">
+    <button onclick="checkSenha()" style="width:100%;padding:12px;background:var(--navy);color:white;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;">Entrar</button>
+    <div id="senha-erro" style="color:#c0392b;font-size:12px;margin-top:10px;display:none;">Senha incorreta.</div>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="header-icon">FM</div>
+  <div>
+    <div class="header-title">Bunker</div>
+    <div class="header-sub">Gestão à Vista — Felipe Moura</div>
+  </div>
+  <div class="header-date" id="header-date"></div>
+</header>
+
+<div style="background:var(--navy);">
+  <div class="site-nav">
+    <button class="nav-btn active" onclick="showTab('painel',this)">Painel</button>
+    <button class="nav-btn" onclick="showTab('agenda',this)">Agenda &amp; Tarefas</button>
+    <button class="nav-btn" onclick="showTab('leituras',this)">Leituras &amp; Estudo</button>
+    <button class="nav-btn" onclick="showTab('intelectual',this)">Intelectual Público</button>
+    <button class="nav-btn" onclick="showTab('aplicsi',this)">Aplicsi</button>
+    <button class="nav-btn" onclick="showTab('sujeito',this)">Formação do Sujeito</button>
+    <button class="nav-btn" onclick="showTab('avulsos',this)">Demandas Avulsas</button>
+    <button class="nav-btn" onclick="showTab('ideias',this)">Ideias em Desenvolvimento</button>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- PAINEL -->
+<div class="tab active" id="tab-painel">
+  <div class="sec-title">Status dos Projetos</div>
+  <div class="cards-g cards-4" style="margin-bottom:28px;">
+    <div class="card"><div class="card-top ct-amber"></div><div class="card-pad">
+      <div class="metric-lbl">Aplicsi</div><div class="metric-big" id="st-aplicsi">—</div><div class="metric-lbl" id="st-aplicsi-sub">produtos</div>
+    </div></div>
+    <div class="card"><div class="card-top ct-blue"></div><div class="card-pad">
+      <div class="metric-lbl">Intelectual Público</div><div class="metric-big" id="st-int">—</div><div class="metric-lbl" id="st-int-sub">produções</div>
+    </div></div>
+    <div class="card"><div class="card-top ct-green"></div><div class="card-pad">
+      <div class="metric-lbl">Formação do Sujeito</div><div class="metric-big" id="st-suj">—</div><div class="metric-lbl" id="st-suj-sub">formatos</div>
+    </div></div>
+    <div class="card"><div class="card-top ct-purple"></div><div class="card-pad">
+      <div class="metric-lbl">Ideias Ativas</div><div class="metric-big" id="st-ideias">—</div><div class="metric-lbl">em desenvolvimento</div>
+    </div></div>
+  </div>
+  <div class="cards-g cards-2" style="margin-bottom:28px;">
+    <div class="card"><div class="card-top ct-amber"></div><div class="card-pad">
+      <div class="metric-lbl">Avulsos Ativos</div><div class="metric-big" id="st-av">—</div><div class="metric-lbl">contratos</div>
+    </div></div>
+    <div class="card"><div class="card-top ct-blue"></div><div class="card-pad">
+      <div class="metric-lbl">Tarefas Pendentes</div><div class="metric-big" id="st-tarefas">—</div><div class="metric-lbl">a fazer</div>
+    </div></div>
+  </div>
+
+  <div class="sec-title">Questões Abertas</div>
+  <div class="card" style="margin-bottom:20px;"><div class="card-pad">
+    <ul class="item-list" id="questoes-list"></ul>
+    <hr class="divider">
+    <input type="text" id="questao-input" placeholder="Registrar questão em aberto..." style="margin-bottom:10px;">
+    <button class="btn btn-primary btn-sm" onclick="addQuestao()">Registrar</button>
+  </div></div>
+
+  <div class="sec-title">Notas Rápidas</div>
+  <div class="card"><div class="card-pad">
+    <div id="notas-list"></div>
+    <textarea id="nota-input" placeholder="Ideia, fragmento de pensamento, observação..."></textarea>
+    <div style="margin-top:10px;"><button class="btn btn-primary btn-sm" onclick="addNota()">Salvar nota</button></div>
+  </div></div>
+</div>
+
+<!-- AGENDA -->
+<div class="tab" id="tab-agenda">
+  <div class="proj-header">
+    <div class="proj-eyebrow">Controle de Tempo</div>
+    <div class="proj-titulo">Agenda &amp; Tarefas</div>
+    <div class="proj-sub">Compromissos, eventos e tarefas pontuais</div>
+  </div>
+
+  <div class="sec-title">Compromissos</div>
+  <div id="comp-list" style="margin-bottom:20px;"></div>
+  <div class="card" style="margin-bottom:28px;"><div class="card-pad">
+    <div class="form-row form-4">
+      <div><label>Data</label><input type="text" id="c-data" placeholder="Ex: 02/07/2026 ou Quartas 17h"></div>
+      <div><label>Tipo</label>
+        <select id="c-tipo">
+          <option value="Único">Único</option>
+          <option value="Recorrente">Recorrente</option>
+          <option value="Evento">Evento</option>
+        </select>
+      </div>
+      <div><label>Status</label>
+        <select id="c-status">
+          <option value="Confirmado">Confirmado</option>
+          <option value="Em andamento">Em andamento</option>
+          <option value="A confirmar">A confirmar</option>
+          <option value="Concluído">Concluído</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row"><div><label>Descrição</label><input type="text" id="c-desc" placeholder="Descrição do compromisso..."></div></div>
+    <button class="btn btn-primary btn-sm" onclick="addComp()">Adicionar compromisso</button>
+  </div></div>
+
+  <div class="sec-title">Tarefas Pontuais</div>
+  <div class="card"><div class="card-pad">
+    <div id="tarefas-list"></div>
+    <hr class="divider">
+    <input type="text" id="t-input" placeholder="Nova tarefa..." style="margin-bottom:10px;">
+    <button class="btn btn-primary btn-sm" onclick="addTarefa()">Adicionar</button>
+  </div></div>
+</div>
+
+<!-- LEITURAS -->
+<div class="tab" id="tab-leituras">
+  <div class="sec-title">Em Leitura Agora</div>
+  <div class="cards-g cards-3" id="leituras-ativas" style="margin-bottom:24px;"></div>
+  <div class="sec-title">Na Fila</div>
+  <div class="cards-g cards-3" id="leituras-fila" style="margin-bottom:24px;"></div>
+  <div class="sec-title">Concluídas</div>
+  <div class="cards-g cards-3" id="leituras-concluidas" style="margin-bottom:28px;"></div>
+  <div class="sec-title">Registrar Leitura</div>
+  <div class="card"><div class="card-pad">
+    <div class="form-row form-2">
+      <div><label>Título</label><input type="text" id="l-titulo" placeholder="Título"></div>
+      <div><label>Autor</label><input type="text" id="l-autor" placeholder="Autor"></div>
+    </div>
+    <div class="form-row form-2">
+      <div><label>Status</label>
+        <select id="l-status">
+          <option value="ativa">Em leitura</option>
+          <option value="fila">Na fila</option>
+          <option value="concluida">Concluída</option>
+        </select>
+      </div>
+      <div><label>Campo</label>
+        <select id="l-campo">
+          <option>Sociologia / Política</option>
+          <option>Psicanálise / Psicossociologia</option>
+          <option>Institucional</option>
+          <option>Filosofia</option>
+          <option>Outro</option>
+        </select>
+      </div>
+    </div>
+    <textarea id="l-nota" style="min-height:60px;" placeholder="Observação (opcional)"></textarea>
+    <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="addLeitura()">Registrar</button>
+  </div></div>
+</div>
+
+<!-- INTELECTUAL PÚBLICO -->
+<div class="tab" id="tab-intelectual">
+  <div class="proj-header">
+    <div class="proj-eyebrow">Pano de Fundo — Analista da Complexidade Humana</div>
+    <div class="proj-titulo">Intelectual Público</div>
+    <div class="proj-sub">Textos, livros, formulações em desenvolvimento — LinkedIn como plataforma principal</div>
+  </div>
+  <div class="sec-title">Estado Atual do Campo</div>
+  <div class="card" style="margin-bottom:20px;"><div class="card-pad">
+    <textarea id="int-campo" placeholder="Como você define o campo intelectual agora?"></textarea>
+    <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('int-campo')">Salvar</button>
+  </div></div>
+  <div class="sec-title">Base Teórica</div>
+  <div class="card" style="margin-bottom:20px;"><div class="card-pad">
+    <textarea id="int-teoria" placeholder="Boaventura de Sousa Santos, neoinstitucionalismo, Tarrow/McAdam/Tilly, Berger & Luckmann, Oswald de Andrade, Durkheim, Argyris..."></textarea>
+    <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('int-teoria')">Salvar</button>
+  </div></div>
+  <div class="sec-title">Formulações em Andamento</div>
+  <div class="card" style="margin-bottom:20px;"><div class="card-pad">
+    <textarea id="int-formulacoes" placeholder="Ideias, teses, conceitos em construção..."></textarea>
+    <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('int-formulacoes')">Salvar</button>
+  </div></div>
+  <div class="sec-title">Produções / Livros</div>
+  <div class="card"><div class="card-pad">
+    <ul class="item-list" id="int-prod-list"></ul>
+    <hr class="divider">
+    <div class="form-row form-2">
+      <div><label>Título</label><input type="text" id="int-pt" placeholder="Ex: O que você está de fato sustentando?"></div>
+      <div><label>Status</label>
+        <select id="int-ps"><option value="ideia">Ideia</option><option value="dev">Em desenvolvimento</option><option value="ativo">Ativo</option><option value="pause">Pausado</option></select>
+      </div>
+    </div>
+    <textarea id="int-pn" style="min-height:60px;" placeholder="Descrição..."></textarea>
+    <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="addItem('int')">Adicionar</button>
+  </div></div>
+</div>
+
+<!-- APLICSI -->
+<div class="tab" id="tab-aplicsi">
+  <div class="proj-header">
+    <div class="proj-eyebrow">Projeto Institucional — LinkedIn</div>
+    <div class="proj-titulo">Aplicsi</div>
+    <div class="proj-sub">Gestão da transformação social — estratégia, liderança, equipes, programas e projetos</div>
+  </div>
+  <div class="sec-title">Questão Central em Aberto</div>
+  <div class="card" style="margin-bottom:20px;border-left:4px solid var(--amber);"><div class="card-pad">
+    <textarea id="ap-questao"></textarea>
+    <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('ap-questao')">Salvar</button>
+  </div></div>
+  <div class="cards-g cards-2" style="margin-bottom:20px;">
+    <div class="card"><div class="card-pad">
+      <div class="sec-title" style="margin-top:0;">Posicionamento Atual</div>
+      <textarea id="ap-posicionamento"></textarea>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('ap-posicionamento')">Salvar</button>
+    </div></div>
+    <div class="card"><div class="card-pad">
+      <div class="sec-title" style="margin-top:0;">A Lente — o que diferencia</div>
+      <textarea id="ap-lente"></textarea>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('ap-lente')">Salvar</button>
+    </div></div>
+  </div>
+  <div class="sec-title">Produtos / Serviços</div>
+  <div class="card" style="margin-bottom:20px;"><div class="card-pad">
+    <ul class="item-list" id="ap-prod-list"></ul>
+    <hr class="divider">
+    <div class="form-row form-3">
+      <div><label>Produto</label><input type="text" id="ap-pt" placeholder="Ex: Consultoria estratégica..."></div>
+      <div><label>Status</label>
+        <select id="ap-ps"><option value="ideia">Ideia</option><option value="dev">Em desenvolvimento</option><option value="ativo">Ativo</option><option value="pause">Pausado</option></select>
+      </div>
+      <div><label>Prazo</label><input type="text" id="ap-prazo" placeholder="Opcional"></div>
+    </div>
+    <textarea id="ap-pn" style="min-height:60px;" placeholder="Descrição..."></textarea>
+    <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="addItem('ap')">Adicionar</button>
+  </div></div>
+  <div class="sec-title">Atividades em Curso</div>
+  <div class="card"><div class="card-pad">
+    <ul class="item-list" id="ap-ativ-list"></ul>
+    <hr class="divider">
+    <div class="form-row form-2">
+      <div><input type="text" id="ap-ativ-input" placeholder="Atividade, cliente, entrega..."></div>
+      <div><input type="text" id="ap-ativ-prazo" placeholder="Prazo (opcional)"></div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="addAtiv('ap')">Adicionar</button>
+  </div></div>
+</div>
+
+<!-- SUJEITO -->
+<div class="tab" id="tab-sujeito">
+  <div class="proj-header">
+    <div class="proj-eyebrow">Projeto — Instagram / Grupos Imersivos</div>
+    <div class="proj-titulo">Formação do Sujeito nas Relações</div>
+    <div class="proj-sub">Desenvolvimento subjetivo e intersubjetivo — em construção com a psicóloga</div>
+  </div>
+  <div class="sec-title">O que é este campo — definição em construção</div>
+  <div class="card" style="margin-bottom:20px;"><div class="card-pad">
+    <textarea id="suj-campo" placeholder="Não é coaching, não é terapia. É formação do sujeito nas relações..."></textarea>
+    <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('suj-campo')">Salvar</button>
+  </div></div>
+  <div class="cards-g cards-2" style="margin-bottom:20px;">
+    <div class="card"><div class="card-pad">
+      <div class="sec-title" style="margin-top:0;">Base Conceitual</div>
+      <textarea id="suj-teoria" placeholder="Psicanálise, psicossociologia, PIP, sociologia das interações..."></textarea>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('suj-teoria')">Salvar</button>
+    </div></div>
+    <div class="card"><div class="card-pad">
+      <div class="sec-title" style="margin-top:0;">Nome em construção</div>
+      <textarea id="suj-nome" placeholder="Candidatos de nome — vai emergir da prática..."></textarea>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('suj-nome')">Salvar</button>
+    </div></div>
+  </div>
+  <div class="sec-title">Formatos / Produtos</div>
+  <div class="card" style="margin-bottom:20px;"><div class="card-pad">
+    <ul class="item-list" id="suj-prod-list"></ul>
+    <hr class="divider">
+    <div class="form-row form-2">
+      <div><label>Formato</label><input type="text" id="suj-pt" placeholder="Ex: Conteúdo Instagram, Grupo imersivo..."></div>
+      <div><label>Status</label>
+        <select id="suj-ps"><option value="ideia">Ideia</option><option value="dev">Em desenvolvimento</option><option value="ativo">Ativo</option><option value="pause">Pausado</option></select>
+      </div>
+    </div>
+    <textarea id="suj-pn" style="min-height:60px;" placeholder="Descrição..."></textarea>
+    <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="addItem('suj')">Adicionar</button>
+  </div></div>
+  <div class="sec-title">Atividades em Curso</div>
+  <div class="card"><div class="card-pad">
+    <ul class="item-list" id="suj-ativ-list"></ul>
+    <hr class="divider">
+    <div class="form-row form-2">
+      <div><input type="text" id="suj-ativ-input" placeholder="Reunião com psicóloga, conteúdo a produzir..."></div>
+      <div><input type="text" id="suj-ativ-prazo" placeholder="Prazo (opcional)"></div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="addAtiv('suj')">Adicionar</button>
+  </div></div>
+</div>
+
+<!-- AVULSOS -->
+<div class="tab" id="tab-avulsos">
+  <div class="proj-header">
+    <div class="proj-eyebrow">Operacional — CNPJ Aplicsi</div>
+    <div class="proj-titulo">Demandas Avulsas</div>
+    <div class="proj-sub">Pagam as contas agora. Fora do posicionamento público.</div>
+  </div>
+  <div class="cards-g cards-2" style="margin-bottom:24px;">
+    <div class="card"><div class="card-top ct-amber"></div><div class="card-pad">
+      <div class="metric-lbl">Contratos Ativos</div><div class="metric-big" id="av-count">0</div>
+    </div></div>
+    <div class="card"><div class="card-top ct-purple"></div><div class="card-pad">
+      <div class="metric-lbl">Receita Estimada (R$)</div>
+      <input type="text" id="av-receita" placeholder="0,00" style="font-size:28px;font-weight:900;color:var(--navy);border:none;background:transparent;padding:4px 0;width:100%;" oninput="saveAv()">
+    </div></div>
+  </div>
+  <div class="sec-title">Em Andamento</div>
+  <div class="card"><div class="card-pad">
+    <ul class="item-list" id="av-list"></ul>
+    <hr class="divider">
+    <div class="form-row form-3">
+      <div><label>Demanda</label><input type="text" id="av-titulo" placeholder="Ex: Disciplina para Faculdade X..."></div>
+      <div><label>Status</label>
+        <select id="av-status"><option value="ativo">Em andamento</option><option value="ideia">A confirmar</option><option value="pause">Concluído</option></select>
+      </div>
+      <div><label>Prazo</label><input type="text" id="av-prazo" placeholder="Ex: 22/06/2026"></div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="addAvulso()">Adicionar</button>
+  </div></div>
+</div>
+
+<!-- IDEIAS -->
+<div class="tab" id="tab-ideias">
+  <div class="proj-header">
+    <div class="proj-eyebrow">Laboratório Intelectual</div>
+    <div class="proj-titulo">Ideias em Desenvolvimento</div>
+    <div class="proj-sub">Livros, conceitos, perspectivas, palestras — do embrião ao pronto para avançar</div>
+  </div>
+  <div class="sec-title">Cards de Ideia</div>
+  <div id="ideias-list" style="margin-bottom:24px;"></div>
+  <div class="sec-title">Registrar Nova Ideia</div>
+  <div class="card"><div class="card-pad">
+    <div class="form-row form-2">
+      <div><label>Título</label><input type="text" id="id-titulo" placeholder="Nome da ideia..."></div>
+      <div><label>Campo</label>
+        <select id="id-campo">
+          <option>Livro</option><option>Conceito</option><option>Palestra</option>
+          <option>Perspectiva</option><option>Projeto</option><option>Posição intelectual</option><option>Outro</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div><label>Estado</label>
+        <select id="id-estado">
+          <option value="embriao">Embrião</option>
+          <option value="dev">Em desenvolvimento</option>
+          <option value="maturando">Maturando</option>
+          <option value="pronto">Pronto para avançar</option>
+        </select>
+      </div>
+    </div>
+    <textarea id="id-desc" placeholder="Descrição da ideia, origem, conexões, próximos passos..."></textarea>
+    <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="addIdeia()">Registrar ideia</button>
+  </div></div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+// ── AUTH ──
+function checkSenha(){
+  if(document.getElementById('senha-input').value==='Felipe1987'){
+    document.getElementById('login-wrap').style.display='none';
+    sessionStorage.setItem('fm_auth','1');
+  } else {
+    document.getElementById('senha-erro').style.display='block';
+    document.getElementById('senha-input').value='';
+    document.getElementById('senha-input').focus();
+  }
+}
+function checkAuth(){
+  if(sessionStorage.getItem('fm_auth')!=='1') document.getElementById('login-wrap').style.display='flex';
+  else document.getElementById('login-wrap').style.display='none';
+}
+
+// ── STATE ──
+const DEFAULTS = {
+  questoes:[],notas:[],leituras:[],campos:{},
+  items:{int:[],ap:[],suj:[]},ativs:{ap:[],suj:[]},
+  avulsos:[],avReceita:'',
+  compromissos:[],tarefas:[],ideias:[]
+};
+const S = JSON.parse(JSON.stringify(DEFAULTS));
+
+function save(){ try{ localStorage.setItem('fm_bunker_v2',JSON.stringify(S)); }catch(e){} }
+function load(){
+  try{
+    const r=localStorage.getItem('fm_bunker_v2');
+    if(r){ const d=JSON.parse(r); Object.keys(DEFAULTS).forEach(k=>{ if(d[k]!==undefined) S[k]=d[k]; }); }
+  }catch(e){}
+}
+
+// ── PRÉ-CARGA (só se localStorage vazio) ──
+function preload(){
+  if(!S.avulsos.length){
+    S.avulsos=[
+      {id:1,titulo:'Conteudista — Preservação de Acervos Textuais e Bibliográficos na Era Digital (Cogna) — R$ 5.210,00',status:'ativo',prazo:'Entregas 22/06–24/07 · Gravações set/2026'},
+      {id:2,titulo:'Leitor Crítico — Cultura de Paz e Cidadania (Cogna) — R$ 1.060,00',status:'ativo',prazo:'Entregas 24/06–22/07/2026'},
+      {id:3,titulo:'Revisão já entregue — Cogna (não paga) — R$ 1.060,00',status:'ativo',prazo:'Aguardando pagamento'},
+      {id:4,titulo:'Consultoria Campanha Prof. Vinícius Machado — R$ 9.045,00',status:'ativo',prazo:'Parcelas: ago e out/2026'},
+      {id:5,titulo:'Fundação Dom Cabral — Aulas — R$ 10.500,00',status:'ativo',prazo:'Parcelas: R$1.500 + R$3.000 + R$3.000 + R$3.000'},
+      {id:6,titulo:'Universidade São Francisco — Flaviana — R$ 3.500,00',status:'ideia',prazo:'A confirmar'},
+    ];
+    S.avReceita='30.375,00';
+  }
+  if(!S.leituras.length){
+    S.leituras=[
+      {id:10,titulo:'Sexo no Cativeiro',autor:'Gail Dines',status:'ativa',campo:'Psicanálise / Psicossociologia',nota:''},
+      {id:11,titulo:'O Mal-Estar na Civilização',autor:'Sigmund Freud',status:'fila',campo:'Psicanálise / Psicossociologia',nota:''},
+      {id:12,titulo:'O Futuro de uma Ilusão',autor:'Sigmund Freud',status:'fila',campo:'Psicanálise / Psicossociologia',nota:'Sobre religião como ilusão — base para o projeto do sujeito nas relações'},
+    ];
+  }
+  if(!S.campos['ap-questao']){
+    S.campos['ap-questao']='Miro em liderança e formação de equipes, ou monto a Aplicsi com consultoria completa? O escopo de atuação ainda está em definição.';
+    S.campos['ap-posicionamento']='A Aplicsi trabalha com organizações e lideranças no campo da transformação e do impacto social para resolver dois problemas que impedem o impacto real: rigidez institucional — quando a estrutura trava o que a organização quer produzir — e falta de postura intencional das lideranças — quando o líder não consegue sustentar o que precisa ser sustentado.';
+    S.campos['ap-lente']='Programas sociais falham não por incompetência técnica, mas por paternalismo estrutural. Teoria de mudança linear não funciona em contextos de conflito e assimetria de poder. Sustentabilidade institucional depende de sujeitos, não de procedimentos. A lente não é o quê — é a teoria que organiza o como.';
+  }
+  if(!S.items.ap.length){
+    S.items.ap=[
+      {id:20,titulo:'Palestra',status:'ativo',nota:'Liderar transformação social — o que separa o esforço do impacto real',prazo:''},
+      {id:21,titulo:'Mentoria',status:'ativo',nota:'Para líderes que querem parar de reagir e agir com direção',prazo:''},
+      {id:22,titulo:'Consultoria',status:'ativo',nota:'Quando o problema não está onde parece',prazo:''},
+      {id:23,titulo:'Imersão',status:'ativo',nota:'Quando a equipe precisa construir leitura comum sobre tema complexo',prazo:''},
+      {id:24,titulo:'Workshop',status:'ativo',nota:'Quando a equipe precisa de competência, não de mais informação',prazo:''},
+    ];
+  }
+  if(!S.ativs.ap.length){
+    S.ativs.ap=[
+      {id:30,texto:'Campanha Prof. Vinícius Machado — 10h semanais',prazo:'Semanal'},
+      {id:31,texto:'4 sessões restantes com Flávia Gamontem (Elevate)',prazo:'A agendar'},
+    ];
+  }
+  if(!S.compromissos.length){
+    S.compromissos=[
+      {id:40,data:'17/06/2026',desc:'Aula de Psicossociologia — 20h',tipo:'Único',status:'Confirmado'},
+      {id:41,data:'02/07/2026',desc:'Voo SP→POA — LA3154 11h20 CGH / 13h00 POA',tipo:'Único',status:'Confirmado'},
+      {id:42,data:'03–05/07/2026',desc:'The Best Week — Porto Alegre (palestra)',tipo:'Evento',status:'Confirmado'},
+      {id:43,data:'06/07/2026',desc:'Voo POA→SP — LA3157 15h00 POA / 16h35 CGH',tipo:'Único',status:'Confirmado'},
+      {id:44,data:'Quartas 17h',desc:'Mentoria Cassio — 7 reuniões restantes',tipo:'Recorrente',status:'Em andamento'},
+      {id:45,data:'A agendar',desc:'4 sessões com Flávia Gamontem (Elevate)',tipo:'Recorrente',status:'A confirmar'},
+      {id:46,data:'02/10/2026',desc:'Aula FDC — Brasília',tipo:'Único',status:'Confirmado'},
+      {id:47,data:'16/12/2026',desc:'Aula FDC — Brasília',tipo:'Único',status:'Confirmado'},
+      {id:48,data:'Semanal',desc:'Campanha Prof. Vinícius — 10h semanais',tipo:'Recorrente',status:'Em andamento'},
+    ];
+  }
+  if(!S.tarefas.length){
+    S.tarefas=[
+      {id:50,texto:'Cadastro na plataforma Ariba (Cogna Educação)',done:false},
+      {id:51,texto:'Prestação de contas para reembolso da Fundação Dom Cabral',done:false},
+      {id:52,texto:'Acompanhar pagamento das aulas pela Fundação Dom Cabral',done:false},
+      {id:53,texto:'Organizar calendário das 4 sessões restantes com Flávia Gamontem',done:false},
+    ];
+  }
+  if(!S.ideias.length){
+    S.ideias=[
+      {id:60,titulo:'Livro 1: O que você está de fato sustentando?',campo:'Livro',estado:'dev',desc:'Livro de mercado para lideranças e organizações de transformação social. Parte do conceito de sustentação e da pergunta que organiza toda a Aplicsi. Vinculado à palestra de Porto Alegre (The Best Week, jul/2026). Prioridade 1 do projeto editorial.'},
+      {id:61,titulo:'Livro 2: Hipersuficiência',campo:'Livro',estado:'embriao',desc:'Relato crítico por dentro da Fundação Renova e do modelo de reparação socioambiental pós-Mariana. Baseado no projeto de doutorado abandonado. Analisa como organizações constroem aparência de suficiência técnica que encobre insuficiência real de transformação. Prioridade 2 do projeto editorial.'},
+      {id:62,titulo:'Livro 3: Junho de 2013 — revisão da dissertação',campo:'Livro',estado:'embriao',desc:'Revisão e adaptação da dissertação de mestrado (UFES, 2015). Por que, em aparente bom momento do Brasil, manifestações massivas ganharam eco? Tese: movimento conectou indignações regionais e questionou um "estado de coisas". Prioridade 3 do projeto editorial.'},
+      {id:63,titulo:'Perspectiva: Malemolência',campo:'Perspectiva',estado:'maturando',desc:'Perspectiva única em desenvolvimento. Mover-se com o campo sem perder o eixo, antecipar movimentos, convidar ao deslocamento, ocupar posição de sujeito diante das marcas sociais. Substrato não-declarado da Aplicsi. Manifesto a ser escrito pelo próprio Felipe. Nunca nomeado em materiais comerciais.'},
+      {id:64,titulo:'Conceito: Fluidez Intencional',campo:'Conceito',estado:'maturando',desc:'Conceito operacional central da Aplicsi, substituindo Ontologia da Sustentação nos materiais comerciais. Responde a rigidez institucional (5 manifestações) e falta de postura intencional (6 riscos). Resultados: intencionalidade, consistência e coordenação. Base: Boaventura de Sousa Santos + pragmatismo situado.'},
+      {id:65,titulo:'Projeto: Formação do Sujeito nas Relações',campo:'Projeto',estado:'dev',desc:'Com psicóloga (a confirmar). Instagram + grupos imersivos. Não é coaching, não é terapia. É formação do sujeito nas relações — desenvolvimento subjetivo e intersubjetivo. Base: psicanálise, psicossociologia, PIP, sociologia das interações. Nome ainda em construção.'},
+      {id:66,titulo:'Palestra: Somos quem sustentamos ser',campo:'Palestra',estado:'dev',desc:'Estruturada pelo método HandMap (Joel Ruocco). Tese: "Somos quem sustentamos ser." Experiência fundante: nome não aparece no jornal (nov/2002) → chamada do Cefet (mar/2003). Máxima: "A diferença que você sustenta é a diferença que você faz!" Estrutura: Compreensão → Teste → Revelação. Homossexualidade revelada só no final. V1 escrita; V2 pendente. Estreia: Porto Alegre, jul/2026.'},
+      {id:67,titulo:'Analista da Complexidade Humana — posição intelectual pública',campo:'Posição intelectual',estado:'maturando',desc:'Fundo intelectual que sustenta tudo: Aplicsi, formação do sujeito, avulsos, conteúdo. Analisa fenômenos sociais, institucionais e políticos a partir da lente sociológica, histórica, existencial. LinkedIn como plataforma. Nunca substitui os projetos práticos — é a matriz que os torna coerentes.'},
+      {id:68,titulo:'Conceito: Sobrevoo Estratégico',campo:'Conceito',estado:'embriao',desc:'Auto-conceituação em desenvolvimento. Felipe não é especialista focado — é pensador de sobrevoo que pousa com intensidade em campos distintos e os conecta. A sensação de insuficiência vem de se exigir o saber do especialista. O sobrevoo é a marca, não a limitação. Pode virar conteúdo de LinkedIn, palestra ou capítulo de livro.'},
+    ];
+  }
+  save();
+}
+
+// ── NAV ──
+function showTab(id,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  renderAll();
+}
+
+// ── DATE ──
+function updateDate(){
+  document.getElementById('header-date').textContent=
+    new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+}
+
+// ── BADGES ──
+const SL={ideia:'Ideia',dev:'Desenvolvendo',ativo:'Ativo',pause:'Pausado',embriao:'Embrião',maturando:'Maturando',pronto:'Pronto'};
+const SC={ideia:'bdg-amber',dev:'bdg-blue',ativo:'bdg-green',pause:'bdg-gray',embriao:'bdg-gray',maturando:'bdg-amber',pronto:'bdg-green'};
+const compSC={'Confirmado':'bdg-green','Em andamento':'bdg-blue','A confirmar':'bdg-amber','Concluído':'bdg-gray'};
+const tipoSC={'Único':'bdg-gray','Recorrente':'bdg-blue','Evento':'bdg-purple'};
+
+// ── QUESTÕES ──
+function addQuestao(){const v=document.getElementById('questao-input').value.trim();if(!v)return;S.questoes.push({id:Date.now(),texto:v});document.getElementById('questao-input').value='';save();renderQuestoes();}
+function delQuestao(id){S.questoes=S.questoes.filter(q=>q.id!==id);save();renderQuestoes();}
+function renderQuestoes(){
+  const el=document.getElementById('questoes-list');if(!el)return;
+  if(!S.questoes.length){el.innerHTML='<li><div class="empty">Nenhuma questão registrada.</div></li>';return;}
+  el.innerHTML=S.questoes.map(q=>`<li><div class="item-body"><div class="item-title">${q.texto}</div></div><div class="item-actions"><button class="btn btn-danger btn-sm" onclick="delQuestao(${q.id})">Remover</button></div></li>`).join('');
+}
+
+// ── NOTAS ──
+function addNota(){const v=document.getElementById('nota-input').value.trim();if(!v)return;S.notas.unshift({id:Date.now(),texto:v,data:new Date().toLocaleDateString('pt-BR')});document.getElementById('nota-input').value='';save();renderNotas();}
+function delNota(id){S.notas=S.notas.filter(n=>n.id!==id);save();renderNotas();}
+function renderNotas(){
+  const el=document.getElementById('notas-list');if(!el)return;
+  if(!S.notas.length){el.innerHTML='<div class="empty">Nenhuma nota ainda.</div>';return;}
+  el.innerHTML=S.notas.slice(0,6).map(n=>`<div class="nota"><div class="nota-data">${n.data}</div><div class="nota-texto">${n.texto}</div><button class="btn btn-danger btn-sm" style="margin-top:8px;" onclick="delNota(${n.id})">Remover</button></div>`).join('');
+}
+
+// ── FIELDS ──
+function saveField(k){const e=document.getElementById(k);if(e)S.campos[k]=e.value;save();}
+function loadFields(){Object.entries(S.campos).forEach(([k,v])=>{const e=document.getElementById(k);if(e)e.value=v;});}
+
+// ── ITEMS ──
+function addItem(proj){
+  const t=document.getElementById(proj+'-pt').value.trim();
+  const st=document.getElementById(proj+'-ps').value;
+  const n=document.getElementById(proj+'-pn').value.trim();
+  const pr=document.getElementById(proj+'-prazo')?document.getElementById(proj+'-prazo').value.trim():'';
+  if(!t)return;
+  S.items[proj].push({id:Date.now(),titulo:t,status:st,nota:n,prazo:pr});
+  document.getElementById(proj+'-pt').value='';
+  document.getElementById(proj+'-pn').value='';
+  save();renderItems(proj);
+}
+function delItem(proj,id){S.items[proj]=S.items[proj].filter(i=>i.id!==id);save();renderItems(proj);}
+function renderItems(proj){
+  const el=document.getElementById(proj+'-prod-list');if(!el)return;
+  if(!S.items[proj].length){el.innerHTML='<li><div class="empty">Nenhum item registrado.</div></li>';return;}
+  el.innerHTML=S.items[proj].map(i=>`<li>
+    <div class="item-body">
+      <div class="item-title">${i.titulo}</div>
+      ${i.nota?`<div class="item-sub">${i.nota}</div>`:''}
+      ${i.prazo?`<div class="item-sub" style="margin-top:3px;">Prazo: ${i.prazo}</div>`:''}
+    </div>
+    <div class="item-actions">
+      <span class="bdg ${SC[i.status]}">${SL[i.status]}</span>
+      <button class="btn btn-danger btn-sm" onclick="delItem('${proj}',${i.id})">×</button>
+    </div>
+  </li>`).join('');
+}
+
+// ── ATIVIDADES ──
+function addAtiv(proj){
+  const v=document.getElementById(proj+'-ativ-input').value.trim();
+  const pr=document.getElementById(proj+'-ativ-prazo')?document.getElementById(proj+'-ativ-prazo').value.trim():'';
+  if(!v)return;
+  S.ativs[proj].push({id:Date.now(),texto:v,prazo:pr});
+  document.getElementById(proj+'-ativ-input').value='';
+  save();renderAtivs(proj);
+}
+function delAtiv(proj,id){S.ativs[proj]=S.ativs[proj].filter(a=>a.id!==id);save();renderAtivs(proj);}
+function renderAtivs(proj){
+  const el=document.getElementById(proj+'-ativ-list');if(!el)return;
+  if(!S.ativs[proj].length){el.innerHTML='<li><div class="empty">Nenhuma atividade em curso.</div></li>';return;}
+  el.innerHTML=S.ativs[proj].map(a=>`<li>
+    <div class="item-body">
+      <div class="item-title">${a.texto}</div>
+      ${a.prazo?`<div class="item-sub">Prazo: ${a.prazo}</div>`:''}
+    </div>
+    <div class="item-actions"><button class="btn btn-danger btn-sm" onclick="delAtiv('${proj}',${a.id})">×</button></div>
+  </li>`).join('');
+}
+
+// ── AVULSOS ──
+function addAvulso(){
+  const t=document.getElementById('av-titulo').value.trim();
+  const st=document.getElementById('av-status').value;
+  const pr=document.getElementById('av-prazo').value.trim();
+  if(!t)return;
+  S.avulsos.push({id:Date.now(),titulo:t,status:st,prazo:pr});
+  document.getElementById('av-titulo').value='';document.getElementById('av-prazo').value='';
+  save();renderAvulsos();
+}
+function delAvulso(id){S.avulsos=S.avulsos.filter(a=>a.id!==id);save();renderAvulsos();}
+function saveAv(){S.avReceita=document.getElementById('av-receita').value;save();}
+function renderAvulsos(){
+  const el=document.getElementById('av-list');if(!el)return;
+  const cnt=document.getElementById('av-count');
+  const ativos=S.avulsos.filter(a=>a.status==='ativo');
+  if(cnt)cnt.textContent=ativos.length;
+  if(!S.avulsos.length){el.innerHTML='<li><div class="empty">Nenhuma demanda registrada.</div></li>';return;}
+  el.innerHTML=S.avulsos.map(a=>`<li>
+    <div class="item-body">
+      <div class="item-title">${a.titulo}</div>
+      ${a.prazo?`<div class="item-sub">Prazo: ${a.prazo}</div>`:''}
+    </div>
+    <div class="item-actions">
+      <span class="bdg ${SC[a.status]}">${SL[a.status]}</span>
+      <button class="btn btn-danger btn-sm" onclick="delAvulso(${a.id})">×</button>
+    </div>
+  </li>`).join('');
+}
+
+// ── LEITURAS ──
+function addLeitura(){
+  const t=document.getElementById('l-titulo').value.trim();if(!t)return;
+  S.leituras.push({id:Date.now(),titulo:t,autor:document.getElementById('l-autor').value.trim(),
+    status:document.getElementById('l-status').value,campo:document.getElementById('l-campo').value,
+    nota:document.getElementById('l-nota').value.trim()});
+  ['l-titulo','l-autor','l-nota'].forEach(id=>document.getElementById(id).value='');
+  save();renderLeituras();
+}
+function delLeitura(id){S.leituras=S.leituras.filter(l=>l.id!==id);save();renderLeituras();}
+function renderLeituras(){
+  [['ativa','leituras-ativas'],['fila','leituras-fila'],['concluida','leituras-concluidas']].forEach(([st,elId])=>{
+    const el=document.getElementById(elId);if(!el)return;
+    const items=S.leituras.filter(l=>l.status===st);
+    if(!items.length){el.innerHTML='<div class="empty">Nenhum item.</div>';return;}
+    el.innerHTML=items.map(l=>`<div class="leitura-card">
+      <div class="leitura-titulo">${l.titulo}</div>
+      <div class="leitura-autor">${l.autor}</div>
+      ${l.campo?`<span class="bdg bdg-gray" style="margin-bottom:8px;display:inline-block;">${l.campo}</span>`:''}
+      ${l.nota?`<div style="font-size:12px;color:var(--text2);margin-top:6px;">${l.nota}</div>`:''}
+      <div style="margin-top:10px;"><button class="btn btn-danger btn-sm" onclick="delLeitura(${l.id})">Remover</button></div>
+    </div>`).join('');
+  });
+}
+
+// ── COMPROMISSOS ──
+function addComp(){
+  const desc=document.getElementById('c-desc').value.trim();if(!desc)return;
+  S.compromissos.push({id:Date.now(),data:document.getElementById('c-data').value.trim(),
+    desc,tipo:document.getElementById('c-tipo').value,status:document.getElementById('c-status').value});
+  document.getElementById('c-desc').value='';document.getElementById('c-data').value='';
+  save();renderComp();
+}
+function delComp(id){S.compromissos=S.compromissos.filter(c=>c.id!==id);save();renderComp();}
+function renderComp(){
+  const el=document.getElementById('comp-list');if(!el)return;
+  if(!S.compromissos.length){el.innerHTML='<div class="empty">Nenhum compromisso registrado.</div>';return;}
+  el.innerHTML=S.compromissos.map(c=>`<div class="comp-item">
+    <div class="comp-data">${c.data||'—'}</div>
+    <div class="comp-body">
+      <div class="comp-titulo">${c.desc}</div>
+      <div class="comp-meta"><span class="bdg ${tipoSC[c.tipo]||'bdg-gray'}">${c.tipo}</span> &nbsp; <span class="bdg ${compSC[c.status]||'bdg-gray'}">${c.status}</span></div>
+    </div>
+    <div class="comp-actions"><button class="btn btn-danger btn-sm" onclick="delComp(${c.id})">×</button></div>
+  </div>`).join('');
+}
+
+// ── TAREFAS ──
+function addTarefa(){const v=document.getElementById('t-input').value.trim();if(!v)return;S.tarefas.push({id:Date.now(),texto:v,done:false});document.getElementById('t-input').value='';save();renderTarefas();}
+function toggleTarefa(id){const t=S.tarefas.find(t=>t.id===id);if(t)t.done=!t.done;save();renderTarefas();}
+function delTarefa(id){S.tarefas=S.tarefas.filter(t=>t.id!==id);save();renderTarefas();}
+function renderTarefas(){
+  const el=document.getElementById('tarefas-list');if(!el)return;
+  if(!S.tarefas.length){el.innerHTML='<div class="empty">Nenhuma tarefa registrada.</div>';return;}
+  el.innerHTML=S.tarefas.map(t=>`<div class="tarefa-item">
+    <input type="checkbox" class="tarefa-check" ${t.done?'checked':''} onchange="toggleTarefa(${t.id})">
+    <span class="tarefa-texto ${t.done?'done':''}">${t.texto}</span>
+    <button class="btn btn-danger btn-sm" onclick="delTarefa(${t.id})">×</button>
+  </div>`).join('');
+}
+
+// ── IDEIAS ──
+const estadoLabel={embriao:'Embrião',dev:'Em desenvolvimento',maturando:'Maturando',pronto:'Pronto para avançar'};
+const estadoColor={embriao:'bdg-gray',dev:'bdg-blue',maturando:'bdg-amber',pronto:'bdg-green'};
+const campoColor={'Livro':'bdg-purple','Conceito':'bdg-blue','Palestra':'bdg-amber','Perspectiva':'bdg-green','Projeto':'bdg-blue','Posição intelectual':'bdg-amber','Outro':'bdg-gray'};
+
+function addIdeia(){
+  const t=document.getElementById('id-titulo').value.trim();if(!t)return;
+  S.ideias.push({id:Date.now(),titulo:t,campo:document.getElementById('id-campo').value,
+    estado:document.getElementById('id-estado').value,desc:document.getElementById('id-desc').value.trim()});
+  document.getElementById('id-titulo').value='';document.getElementById('id-desc').value='';
+  save();renderIdeias();
+}
+function delIdeia(id){S.ideias=S.ideias.filter(i=>i.id!==id);save();renderIdeias();}
+function renderIdeias(){
+  const el=document.getElementById('ideias-list');if(!el)return;
+  if(!S.ideias.length){el.innerHTML='<div class="empty">Nenhuma ideia registrada.</div>';return;}
+  el.innerHTML=S.ideias.map(i=>`<div class="ideia-card">
+    <div class="ideia-header">
+      <div class="ideia-titulo">${i.titulo}</div>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        <span class="bdg ${campoColor[i.campo]||'bdg-gray'}">${i.campo}</span>
+        <span class="bdg ${estadoColor[i.estado]}">${estadoLabel[i.estado]}</span>
+        <button class="btn btn-danger btn-sm" onclick="delIdeia(${i.id})" style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);border:none;">×</button>
+      </div>
+    </div>
+    ${i.desc?`<div class="ideia-body"><div class="ideia-desc">${i.desc}</div></div>`:''}
+  </div>`).join('');
+}
+
+// ── HOME CARDS ──
+function renderHomeCards(){
+  const v=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val||'—';};
+  v('st-aplicsi',S.items.ap.length);
+  v('st-int',S.items.int.length);
+  v('st-suj',S.items.suj.length);
+  v('st-ideias',S.ideias.length);
+  v('st-av',S.avulsos.filter(a=>a.status==='ativo').length);
+  v('st-tarefas',S.tarefas.filter(t=>!t.done).length);
+  const avr=document.getElementById('av-receita');if(avr)avr.value=S.avReceita;
+}
+
+// ── RENDER ALL ──
+function renderAll(){
+  renderQuestoes();renderNotas();
+  renderItems('int');renderItems('ap');renderItems('suj');
+  renderAtivs('ap');renderAtivs('suj');
+  renderAvulsos();renderLeituras();
+  renderComp();renderTarefas();renderIdeias();
+  renderHomeCards();loadFields();
+  const avr=document.getElementById('av-receita');if(avr)avr.value=S.avReceita;
+}
+
+// ── AUTO-SAVE TEXTAREAS ──
+['int-campo','int-teoria','int-formulacoes','ap-questao','ap-posicionamento','ap-lente','suj-campo','suj-teoria','suj-nome'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener('blur',()=>saveField(id));
+});
+
+// ── INIT ──
+checkAuth();load();preload();updateDate();renderAll();
+</script>
+</body>
+</html>
