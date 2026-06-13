@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FM — Bunker</title>
+<style>
+:root {
+  --navy: #1A2744;
+  --navy2: #2A3F6B;
+  --amber: #B85C38;
+  --green: #27AE60;
+  --blue: #3a5a8a;
+  --purple: #534AB7;
+  --gray: #2C3E50;
+  --white: #FFFFFF;
+  --text: #1A1A2E;
+  --text2: #5a6478;
+  --border: #DDE0E8;
+  --bg: #F0F2F7;
+  --gray-l: #f4f5f8;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+
+/* HEADER */
+.site-header {
+  background: var(--navy);
+  position: sticky; top: 0; z-index: 100;
+  padding: 0 32px;
+  display: flex; align-items: center; gap: 14px;
+  height: 60px;
+}
+.header-icon {
+  width: 36px; height: 36px;
+  background: var(--amber);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 900; color: white;
+  flex-shrink: 0;
+}
+.header-title { font-size: 17px; font-weight: 800; color: white; }
+.header-sub { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 1px; }
+.header-date { margin-left: auto; font-size: 11px; color: rgba(255,255,255,.35); text-align: right; }
+
+/* NAV TABS */
+.site-nav {
+  background: rgba(255,255,255,.06);
+  border-top: 1px solid rgba(255,255,255,.08);
+  padding: 0 32px;
+  display: flex; gap: 0;
+  overflow-x: auto; scrollbar-width: none;
+}
+.site-nav::-webkit-scrollbar { display: none; }
+.nav-btn {
+  padding: 12px 16px;
+  font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,.5);
+  background: none; border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer; white-space: nowrap;
+  transition: color .15s, border-color .15s;
+}
+.nav-btn:hover { color: white; }
+.nav-btn.active { color: white; border-bottom-color: var(--amber); font-weight: 700; }
+
+/* CONTENT */
+.content { padding: 28px 32px 64px; max-width: 1100px; }
+.tab { display: none; }
+.tab.active { display: block; }
+
+/* SECTION TITLE */
+.sec-title {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text2);
+  margin: 28px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.sec-title:first-child { margin-top: 0; }
+
+/* CARDS GRID */
+.cards-g { display: grid; gap: 14px; }
+.cards-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.cards-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.cards-4 { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+
+/* CARD */
+.card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.card-pad { padding: 18px 20px; }
+.card-title { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.card-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.card-top { height: 4px; }
+.ct-amber { background: var(--amber); }
+.ct-blue  { background: var(--blue); }
+.ct-green { background: var(--green); }
+.ct-purple{ background: var(--purple); }
+
+/* METRIC CARD */
+.metric-big { font-size: 36px; font-weight: 900; color: var(--navy); line-height: 1; margin-bottom: 4px; }
+.metric-lbl { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: .08em; }
+
+/* BADGE */
+.bdg {
+  display: inline-block;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 9px; border-radius: 99px;
+  letter-spacing: .04em;
+}
+.bdg-amber  { background: rgba(184,92,56,.1); color: var(--amber); }
+.bdg-blue   { background: rgba(58,90,138,.1); color: var(--blue); }
+.bdg-green  { background: rgba(39,174,96,.1); color: var(--green); }
+.bdg-purple { background: rgba(83,74,183,.1); color: var(--purple); }
+.bdg-gray   { background: var(--gray-l); color: var(--text2); }
+
+/* FORM */
+label { display: block; font-size: 11px; font-weight: 700; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .06em; }
+input[type="text"], textarea, select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px; font-family: inherit;
+  color: var(--text);
+  background: white;
+  outline: none;
+  transition: border-color .2s;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--amber); }
+textarea { resize: vertical; min-height: 80px; }
+.form-row { display: grid; gap: 12px; margin-bottom: 12px; }
+.form-2 { grid-template-columns: 1fr 1fr; }
+.form-3 { grid-template-columns: 2fr 1fr 1fr; }
+
+/* BTN */
+.btn {
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 12px; font-weight: 700;
+  cursor: pointer; border: none;
+  transition: background .15s, opacity .15s;
+}
+.btn-primary { background: var(--navy); color: white; }
+.btn-primary:hover { background: var(--amber); }
+.btn-sm { padding: 6px 13px; font-size: 11px; }
+.btn-ghost { background: var(--gray-l); color: var(--text2); }
+.btn-ghost:hover { background: var(--border); }
+.btn-danger { background: rgba(192,57,43,.08); color: #c0392b; }
+.btn-danger:hover { background: #c0392b; color: white; }
+
+/* LIST */
+.item-list { list-style: none; }
+.item-list li {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.item-list li:last-child { border-bottom: none; }
+.item-body { flex: 1; }
+.item-title { font-size: 14px; color: var(--text); font-weight: 500; margin-bottom: 2px; }
+.item-sub { font-size: 11px; color: var(--text2); }
+.item-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+
+/* NOTA */
+.nota {
+  background: var(--gray-l);
+  border-radius: 8px;
+  border-left: 3px solid var(--amber);
+  padding: 12px 16px;
+  margin-bottom: 10px;
+}
+.nota-data { font-size: 10px; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: .08em; }
+.nota-texto { font-size: 13px; color: var(--text); line-height: 1.6; }
+
+/* LEITURA CARD */
+.leitura-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.leitura-titulo { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 3px; font-style: italic; }
+.leitura-autor { font-size: 11px; color: var(--text2); margin-bottom: 6px; }
+
+/* EMPTY */
+.empty { color: var(--text2); font-size: 12px; padding: 14px 0; font-style: italic; }
+
+/* DIVIDER */
+.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-wrap" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--navy);position:fixed;inset:0;z-index:9999;">
+  <div style="background:white;border-radius:14px;padding:44px 40px;width:100%;max-width:380px;text-align:center;">
+    <div style="width:56px;height:56px;background:var(--amber);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:18px;font-weight:900;color:white;">FM</div>
+    <div style="font-size:20px;font-weight:800;color:var(--navy);margin-bottom:4px;">Bunker</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:24px;">Acesso restrito</div>
+    <input type="password" id="senha-input" placeholder="Senha" style="margin-bottom:12px;text-align:center;" onkeydown="if(event.key==='Enter')checkSenha()">
+    <button onclick="checkSenha()" style="width:100%;padding:12px;background:var(--navy);color:white;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;">Entrar</button>
+    <div id="senha-erro" style="color:#c0392b;font-size:12px;margin-top:10px;display:none;">Senha incorreta.</div>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="header-icon">FM</div>
+  <div>
+    <div class="header-title">Bunker</div>
+    <div class="header-sub">Gestão à Vista — Felipe Moura</div>
+  </div>
+  <div class="header-date" id="header-date"></div>
+</header>
+
+<div style="background:var(--navy);">
+  <div class="site-nav">
+    <button class="nav-btn active" onclick="showTab('painel', this)">Painel</button>
+    <button class="nav-btn" onclick="showTab('leituras', this)">Leituras &amp; Estudo</button>
+    <button class="nav-btn" onclick="showTab('intelectual', this)">Intelectual Público</button>
+    <button class="nav-btn" onclick="showTab('aplicsi', this)">Aplicsi</button>
+    <button class="nav-btn" onclick="showTab('sujeito', this)">Formação do Sujeito</button>
+    <button class="nav-btn" onclick="showTab('avulsos', this)">Demandas Avulsas</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- PAINEL -->
+  <div class="tab active" id="tab-painel">
+    <div class="sec-title">Status dos Projetos</div>
+    <div class="cards-g cards-4" style="margin-bottom:28px;">
+      <div class="card">
+        <div class="card-top ct-amber"></div>
+        <div class="card-pad">
+          <div class="metric-lbl">Aplicsi</div>
+          <div class="metric-big" id="st-aplicsi">—</div>
+          <div class="metric-lbl" id="st-aplicsi-sub" style="margin-top:4px;">itens registrados</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-top ct-blue"></div>
+        <div class="card-pad">
+          <div class="metric-lbl">Intelectual Público</div>
+          <div class="metric-big" id="st-int">—</div>
+          <div class="metric-lbl" id="st-int-sub" style="margin-top:4px;">produções</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-top ct-green"></div>
+        <div class="card-pad">
+          <div class="metric-lbl">Formação do Sujeito</div>
+          <div class="metric-big" id="st-suj">—</div>
+          <div class="metric-lbl" id="st-suj-sub" style="margin-top:4px;">formatos</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-top ct-purple"></div>
+        <div class="card-pad">
+          <div class="metric-lbl">Avulsos Ativos</div>
+          <div class="metric-big" id="st-av">—</div>
+          <div class="metric-lbl" style="margin-top:4px;">demandas</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-title">Questões Abertas</div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-pad">
+        <ul class="item-list" id="questoes-list"></ul>
+        <hr class="divider">
+        <input type="text" id="questao-input" placeholder="Registrar questão em aberto..." style="margin-bottom:10px;">
+        <button class="btn btn-primary btn-sm" onclick="addQuestao()">Registrar</button>
+      </div>
+    </div>
+
+    <div class="sec-title">Notas Rápidas</div>
+    <div class="card">
+      <div class="card-pad">
+        <div id="notas-list"></div>
+        <textarea id="nota-input" placeholder="Ideia, fragmento de pensamento, observação..."></textarea>
+        <div style="margin-top:10px;">
+          <button class="btn btn-primary btn-sm" onclick="addNota()">Salvar nota</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEITURAS -->
+  <div class="tab" id="tab-leituras">
+    <div class="sec-title">Em Leitura Agora</div>
+    <div class="cards-g cards-3" id="leituras-ativas" style="margin-bottom:24px;"></div>
+
+    <div class="sec-title">Na Fila</div>
+    <div class="cards-g cards-3" id="leituras-fila" style="margin-bottom:24px;"></div>
+
+    <div class="sec-title">Concluídas</div>
+    <div class="cards-g cards-3" id="leituras-concluidas" style="margin-bottom:28px;"></div>
+
+    <div class="sec-title">Registrar Leitura</div>
+    <div class="card">
+      <div class="card-pad">
+        <div class="form-row form-2">
+          <div><label>Título</label><input type="text" id="l-titulo" placeholder="Título do livro / artigo"></div>
+          <div><label>Autor</label><input type="text" id="l-autor" placeholder="Autor"></div>
+        </div>
+        <div class="form-row form-2">
+          <div>
+            <label>Status</label>
+            <select id="l-status">
+              <option value="ativa">Em leitura</option>
+              <option value="fila">Na fila</option>
+              <option value="concluida">Concluída</option>
+            </select>
+          </div>
+          <div>
+            <label>Campo</label>
+            <select id="l-campo">
+              <option value="Sociologia / Política">Sociologia / Política</option>
+              <option value="Psicanálise / Psicossociologia">Psicanálise / Psicossociologia</option>
+              <option value="Institucional">Institucional</option>
+              <option value="Filosofia">Filosofia</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div><label>Observação (opcional)</label><textarea id="l-nota" style="min-height:60px;" placeholder="O que está chamando atenção..."></textarea></div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="addLeitura()">Registrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTELECTUAL PÚBLICO -->
+  <div class="tab" id="tab-intelectual">
+    <div style="background:var(--navy);border-radius:12px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;gap:16px;">
+      <div>
+        <div style="font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Pano de Fundo</div>
+        <div style="font-size:18px;font-weight:800;color:white;">Intelectual Público</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.55);margin-top:4px;">Analista da complexidade humana — LinkedIn como plataforma principal</div>
+      </div>
+    </div>
+
+    <div class="sec-title">Estado Atual do Campo</div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-pad">
+        <textarea id="int-campo" placeholder="Como você define o campo intelectual agora? O que está em construção?"></textarea>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('int-campo')">Salvar</button>
+      </div>
+    </div>
+
+    <div class="sec-title">Base Teórica — Referências Centrais</div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-pad">
+        <textarea id="int-teoria" placeholder="Boaventura de Sousa Santos, neoinstitucionalismo, Tarrow/McAdam/Tilly, Berger & Luckmann, Oswald de Andrade, Durkheim, Argyris..."></textarea>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('int-teoria')">Salvar</button>
+      </div>
+    </div>
+
+    <div class="sec-title">Formulações em Andamento</div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-pad">
+        <textarea id="int-formulacoes" placeholder="Ideias, teses, conceitos em construção..."></textarea>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('int-formulacoes')">Salvar</button>
+      </div>
+    </div>
+
+    <div class="sec-title">Produções / Livros</div>
+    <div class="card">
+      <div class="card-pad">
+        <ul class="item-list" id="int-prod-list"></ul>
+        <hr class="divider">
+        <div class="form-row form-2">
+          <div><label>Título</label><input type="text" id="int-pt" placeholder="Ex: O que você está de fato sustentando?"></div>
+          <div><label>Status</label>
+            <select id="int-ps">
+              <option value="ideia">Ideia</option>
+              <option value="dev">Em desenvolvimento</option>
+              <option value="ativo">Ativo</option>
+              <option value="pause">Pausado</option>
+            </select>
+          </div>
+        </div>
+        <textarea id="int-pn" style="min-height:60px;" placeholder="Descrição / estado atual..."></textarea>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="addItem('int')">Adicionar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APLICSI -->
+  <div class="tab" id="tab-aplicsi">
+    <div style="background:var(--navy);border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+      <div style="font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Projeto Institucional — LinkedIn</div>
+      <div style="font-size:18px;font-weight:800;color:white;">Aplicsi</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.55);margin-top:4px;">Gestão da transformação social — estratégia, liderança, equipes, programas e projetos</div>
+    </div>
+
+    <div class="sec-title">Questão Central em Aberto</div>
+    <div class="card" style="margin-bottom:20px;border-left:4px solid var(--amber);">
+      <div class="card-pad">
+        <textarea id="ap-questao" placeholder="Ex: Miro em liderança e formação de equipes, ou monto a Aplicsi com consultoria completa?"></textarea>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('ap-questao')">Salvar</button>
+      </div>
+    </div>
+
+    <div class="cards-g cards-2" style="margin-bottom:20px;">
+      <div class="card">
+        <div class="card-pad">
+          <div class="sec-title" style="margin-top:0;">Posicionamento Atual</div>
+          <textarea id="ap-posicionamento" placeholder="Para quem, com o quê, a partir de que lente..."></textarea>
+          <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('ap-posicionamento')">Salvar</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-pad">
+          <div class="sec-title" style="margin-top:0;">A Lente — o que diferencia</div>
+          <textarea id="ap-lente" placeholder="O que a Aplicsi sabe que outros não sabem. A teoria que organiza o como..."></textarea>
+          <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('ap-lente')">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-title">Produtos / Serviços</div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-pad">
+        <ul class="item-list" id="ap-prod-list"></ul>
+        <hr class="divider">
+        <div class="form-row form-2">
+          <div><label>Produto</label><input type="text" id="ap-pt" placeholder="Ex: Consultoria estratégica, Workshop..."></div>
+          <div><label>Status</label>
+            <select id="ap-ps">
+              <option value="ideia">Ideia</option>
+              <option value="dev">Em desenvolvimento</option>
+              <option value="ativo">Ativo</option>
+              <option value="pause">Pausado</option>
+            </select>
+          </div>
+        </div>
+        <textarea id="ap-pn" style="min-height:60px;" placeholder="Descrição..."></textarea>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="addItem('ap')">Adicionar</button>
+      </div>
+    </div>
+
+    <div class="sec-title">Atividades em Curso</div>
+    <div class="card">
+      <div class="card-pad">
+        <ul class="item-list" id="ap-ativ-list"></ul>
+        <hr class="divider">
+        <input type="text" id="ap-ativ-input" placeholder="Atividade, cliente, entrega...">
+        <button class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="addAtiv('ap')">Adicionar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUJEITO -->
+  <div class="tab" id="tab-sujeito">
+    <div style="background:var(--navy);border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+      <div style="font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Projeto — Instagram / Grupos Imersivos</div>
+      <div style="font-size:18px;font-weight:800;color:white;">Formação do Sujeito nas Relações</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.55);margin-top:4px;">Desenvolvimento subjetivo e intersubjetivo — em construção com a psicóloga</div>
+    </div>
+
+    <div class="sec-title">O que é este campo — definição em construção</div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-pad">
+        <textarea id="suj-campo" placeholder="Não é coaching, não é terapia. É formação do sujeito nas relações. Como você está nomeando isso agora?"></textarea>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('suj-campo')">Salvar</button>
+      </div>
+    </div>
+
+    <div class="cards-g cards-2" style="margin-bottom:20px;">
+      <div class="card">
+        <div class="card-pad">
+          <div class="sec-title" style="margin-top:0;">Base Conceitual</div>
+          <textarea id="suj-teoria" placeholder="Psicanálise, psicossociologia, PIP, sociologia das interações, seu próprio processo..."></textarea>
+          <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('suj-teoria')">Salvar</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-pad">
+          <div class="sec-title" style="margin-top:0;">Nome em construção</div>
+          <textarea id="suj-nome" placeholder="O nome provavelmente vai emergir da prática. Registre candidatos aqui..."></textarea>
+          <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="saveField('suj-nome')">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-title">Formatos / Produtos</div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-pad">
+        <ul class="item-list" id="suj-prod-list"></ul>
+        <hr class="divider">
+        <div class="form-row form-2">
+          <div><label>Formato</label><input type="text" id="suj-pt" placeholder="Ex: Conteúdo Instagram, Grupo imersivo..."></div>
+          <div><label>Status</label>
+            <select id="suj-ps">
+              <option value="ideia">Ideia</option>
+              <option value="dev">Em desenvolvimento</option>
+              <option value="ativo">Ativo</option>
+              <option value="pause">Pausado</option>
+            </select>
+          </div>
+        </div>
+        <textarea id="suj-pn" style="min-height:60px;" placeholder="Descrição..."></textarea>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="addItem('suj')">Adicionar</button>
+      </div>
+    </div>
+
+    <div class="sec-title">Atividades em Curso</div>
+    <div class="card">
+      <div class="card-pad">
+        <ul class="item-list" id="suj-ativ-list"></ul>
+        <hr class="divider">
+        <input type="text" id="suj-ativ-input" placeholder="Reunião com psicóloga, conteúdo a produzir...">
+        <button class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="addAtiv('suj')">Adicionar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AVULSOS -->
+  <div class="tab" id="tab-avulsos">
+    <div style="background:var(--navy);border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+      <div style="font-size:11px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Operacional — CNPJ Aplicsi</div>
+      <div style="font-size:18px;font-weight:800;color:white;">Demandas Avulsas</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.55);margin-top:4px;">Pagam as contas agora. Fora do posicionamento público.</div>
+    </div>
+
+    <div class="cards-g cards-2" style="margin-bottom:24px;">
+      <div class="card">
+        <div class="card-top ct-amber"></div>
+        <div class="card-pad">
+          <div class="metric-lbl">Contratos Ativos</div>
+          <div class="metric-big" id="av-count">0</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-top ct-purple"></div>
+        <div class="card-pad">
+          <div class="metric-lbl">Receita Estimada (R$)</div>
+          <input type="text" id="av-receita" placeholder="0,00" style="font-size:28px;font-weight:900;color:var(--navy);border:none;background:transparent;padding:4px 0;width:100%;" oninput="saveAv()">
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-title">Em Andamento</div>
+    <div class="card">
+      <div class="card-pad">
+        <ul class="item-list" id="av-list"></ul>
+        <hr class="divider">
+        <div class="form-row form-2">
+          <div><label>Demanda</label><input type="text" id="av-titulo" placeholder="Ex: Disciplina para Faculdade X..."></div>
+          <div><label>Status</label>
+            <select id="av-status">
+              <option value="ativo">Em andamento</option>
+              <option value="ideia">A confirmar</option>
+              <option value="pause">Concluído</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="addAvulso()">Adicionar</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<script>
+// ── LOGIN ──
+function checkSenha() {
+  const v = document.getElementById('senha-input').value;
+  if (v === 'Felipe1987') {
+    document.getElementById('login-wrap').style.display = 'none';
+    sessionStorage.setItem('fm_auth', '1');
+  } else {
+    document.getElementById('senha-erro').style.display = 'block';
+    document.getElementById('senha-input').value = '';
+    document.getElementById('senha-input').focus();
+  }
+}
+function checkAuth() {
+  if (sessionStorage.getItem('fm_auth') !== '1') {
+    document.getElementById('login-wrap').style.display = 'flex';
+  } else {
+    document.getElementById('login-wrap').style.display = 'none';
+  }
+}
+
+// ── STATE ──
+const S = {
+  questoes:[], notas:[], leituras:[],
+  campos:{},
+  items:{ int:[], ap:[], suj:[] },
+  ativs:{ ap:[], suj:[] },
+  avulsos:[], avReceita:''
+};
+
+function save() { try { localStorage.setItem('fm_bunker_v2', JSON.stringify(S)); } catch(e){} }
+function load() {
+  try {
+    const r = localStorage.getItem('fm_bunker_v2');
+    if (r) Object.assign(S, JSON.parse(r));
+  } catch(e){}
+}
+
+// NAV
+function showTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  renderAll();
+}
+
+// DATE
+function updateDate() {
+  document.getElementById('header-date').textContent =
+    new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+}
+
+// STATUS BADGES
+const SL = { ideia:'Ideia', dev:'Desenvolvendo', ativo:'Ativo', pause:'Pausado' };
+const SC = { ideia:'bdg-amber', dev:'bdg-blue', ativo:'bdg-green', pause:'bdg-gray' };
+
+// QUESTÕES
+function addQuestao() {
+  const v = document.getElementById('questao-input').value.trim();
+  if (!v) return;
+  S.questoes.push({ id:Date.now(), texto:v });
+  document.getElementById('questao-input').value='';
+  save(); renderQuestoes();
+}
+function delQuestao(id) { S.questoes=S.questoes.filter(q=>q.id!==id); save(); renderQuestoes(); }
+function renderQuestoes() {
+  const el=document.getElementById('questoes-list'); if(!el)return;
+  if(!S.questoes.length){el.innerHTML='<li><div class="empty">Nenhuma questão registrada.</div></li>';return;}
+  el.innerHTML=S.questoes.map(q=>`<li>
+    <div class="item-body"><div class="item-title">${q.texto}</div></div>
+    <div class="item-actions"><button class="btn btn-danger btn-sm" onclick="delQuestao(${q.id})">Remover</button></div>
+  </li>`).join('');
+}
+
+// NOTAS
+function addNota() {
+  const v=document.getElementById('nota-input').value.trim();
+  if(!v)return;
+  S.notas.unshift({id:Date.now(),texto:v,data:new Date().toLocaleDateString('pt-BR')});
+  document.getElementById('nota-input').value='';
+  save(); renderNotas();
+}
+function delNota(id) { S.notas=S.notas.filter(n=>n.id!==id); save(); renderNotas(); }
+function renderNotas() {
+  const el=document.getElementById('notas-list'); if(!el)return;
+  if(!S.notas.length){el.innerHTML='<div class="empty">Nenhuma nota ainda.</div>';return;}
+  el.innerHTML=S.notas.slice(0,6).map(n=>`
+    <div class="nota">
+      <div class="nota-data">${n.data}</div>
+      <div class="nota-texto">${n.texto}</div>
+      <button class="btn btn-danger btn-sm" style="margin-top:8px;" onclick="delNota(${n.id})">Remover</button>
+    </div>`).join('');
+}
+
+// FIELDS
+function saveField(k) { const e=document.getElementById(k); if(e)S.campos[k]=e.value; save(); }
+function loadFields() { Object.entries(S.campos).forEach(([k,v])=>{const e=document.getElementById(k);if(e)e.value=v;}); }
+
+// ITEMS (produções)
+function addItem(proj) {
+  const t=document.getElementById(proj+'-pt').value.trim();
+  const st=document.getElementById(proj+'-ps').value;
+  const n=document.getElementById(proj+'-pn').value.trim();
+  if(!t)return;
+  S.items[proj].push({id:Date.now(),titulo:t,status:st,nota:n});
+  document.getElementById(proj+'-pt').value='';
+  document.getElementById(proj+'-pn').value='';
+  save(); renderItems(proj);
+}
+function delItem(proj,id){ S.items[proj]=S.items[proj].filter(i=>i.id!==id); save(); renderItems(proj); }
+function renderItems(proj) {
+  const el=document.getElementById(proj+'-prod-list'); if(!el)return;
+  if(!S.items[proj].length){el.innerHTML='<li><div class="empty">Nenhum item registrado.</div></li>';return;}
+  el.innerHTML=S.items[proj].map(i=>`<li>
+    <div class="item-body">
+      <div class="item-title">${i.titulo}</div>
+      ${i.nota?`<div class="item-sub">${i.nota}</div>`:''}
+    </div>
+    <div class="item-actions">
+      <span class="bdg ${SC[i.status]}">${SL[i.status]}</span>
+      <button class="btn btn-danger btn-sm" onclick="delItem('${proj}',${i.id})">×</button>
+    </div>
+  </li>`).join('');
+}
+
+// ATIVIDADES
+function addAtiv(proj) {
+  const v=document.getElementById(proj+'-ativ-input').value.trim();
+  if(!v)return;
+  S.ativs[proj].push({id:Date.now(),texto:v});
+  document.getElementById(proj+'-ativ-input').value='';
+  save(); renderAtivs(proj);
+}
+function delAtiv(proj,id){ S.ativs[proj]=S.ativs[proj].filter(a=>a.id!==id); save(); renderAtivs(proj); }
+function renderAtivs(proj) {
+  const el=document.getElementById(proj+'-ativ-list'); if(!el)return;
+  if(!S.ativs[proj].length){el.innerHTML='<li><div class="empty">Nenhuma atividade em curso.</div></li>';return;}
+  el.innerHTML=S.ativs[proj].map(a=>`<li>
+    <div class="item-body"><div class="item-title">${a.texto}</div></div>
+    <div class="item-actions"><button class="btn btn-danger btn-sm" onclick="delAtiv('${proj}',${a.id})">×</button></div>
+  </li>`).join('');
+}
+
+// AVULSOS
+function addAvulso() {
+  const t=document.getElementById('av-titulo').value.trim();
+  const st=document.getElementById('av-status').value;
+  if(!t)return;
+  S.avulsos.push({id:Date.now(),titulo:t,status:st});
+  document.getElementById('av-titulo').value='';
+  save(); renderAvulsos();
+}
+function delAvulso(id){ S.avulsos=S.avulsos.filter(a=>a.id!==id); save(); renderAvulsos(); }
+function saveAv(){ S.avReceita=document.getElementById('av-receita').value; save(); }
+function renderAvulsos() {
+  const el=document.getElementById('av-list'); if(!el)return;
+  const cnt=document.getElementById('av-count');
+  const ativos=S.avulsos.filter(a=>a.status==='ativo');
+  if(cnt)cnt.textContent=ativos.length;
+  if(!S.avulsos.length){el.innerHTML='<li><div class="empty">Nenhuma demanda registrada.</div></li>';return;}
+  el.innerHTML=S.avulsos.map(a=>`<li>
+    <div class="item-body"><div class="item-title">${a.titulo}</div></div>
+    <div class="item-actions">
+      <span class="bdg ${SC[a.status]}">${SL[a.status]}</span>
+      <button class="btn btn-danger btn-sm" onclick="delAvulso(${a.id})">×</button>
+    </div>
+  </li>`).join('');
+}
+
+// LEITURAS
+function addLeitura() {
+  const t=document.getElementById('l-titulo').value.trim();
+  if(!t)return;
+  S.leituras.push({
+    id:Date.now(),
+    titulo:t,
+    autor:document.getElementById('l-autor').value.trim(),
+    status:document.getElementById('l-status').value,
+    campo:document.getElementById('l-campo').value,
+    nota:document.getElementById('l-nota').value.trim()
+  });
+  ['l-titulo','l-autor','l-nota'].forEach(id=>document.getElementById(id).value='');
+  save(); renderLeituras();
+}
+function delLeitura(id){ S.leituras=S.leituras.filter(l=>l.id!==id); save(); renderLeituras(); }
+function renderLeituras() {
+  [['ativa','leituras-ativas'],['fila','leituras-fila'],['concluida','leituras-concluidas']].forEach(([st,elId])=>{
+    const el=document.getElementById(elId); if(!el)return;
+    const items=S.leituras.filter(l=>l.status===st);
+    if(!items.length){el.innerHTML='<div class="empty">Nenhum item.</div>';return;}
+    el.innerHTML=items.map(l=>`
+      <div class="leitura-card">
+        <div class="leitura-titulo">${l.titulo}</div>
+        <div class="leitura-autor">${l.autor}</div>
+        ${l.campo?`<span class="bdg bdg-gray" style="margin-bottom:8px;display:inline-block;">${l.campo}</span>`:''}
+        ${l.nota?`<div style="font-size:12px;color:var(--text2);margin-top:6px;">${l.nota}</div>`:''}
+        <div style="margin-top:10px;"><button class="btn btn-danger btn-sm" onclick="delLeitura(${l.id})">Remover</button></div>
+      </div>`).join('');
+  });
+}
+
+// HOME CARDS
+function renderHomeCards() {
+  const pairs = [
+    ['st-aplicsi','st-aplicsi-sub', S.items.ap.length, 'produtos/serviços'],
+    ['st-int','st-int-sub', S.items.int.length, 'produções'],
+    ['st-suj','st-suj-sub', S.items.suj.length, 'formatos'],
+  ];
+  pairs.forEach(([vid,sid,val,lbl])=>{
+    const v=document.getElementById(vid), s=document.getElementById(sid);
+    if(v) v.textContent=val||'—';
+    if(s) s.textContent=lbl;
+  });
+  const av=document.getElementById('st-av');
+  if(av) av.textContent=S.avulsos.filter(a=>a.status==='ativo').length||'—';
+  const avr=document.getElementById('av-receita');
+  if(avr) avr.value=S.avReceita;
+}
+
+function renderAll() {
+  renderQuestoes(); renderNotas();
+  renderItems('int'); renderItems('ap'); renderItems('suj');
+  renderAtivs('ap'); renderAtivs('suj');
+  renderAvulsos(); renderLeituras();
+  renderHomeCards(); loadFields();
+}
+
+// INIT
+checkAuth(); load(); updateDate(); renderAll();
+
+// Auto-save textareas on blur
+const autoFields = ['int-campo','int-teoria','int-formulacoes','ap-questao','ap-posicionamento','ap-lente','suj-campo','suj-teoria','suj-nome'];
+autoFields.forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener('blur',()=>saveField(id));
+});
+</script>
+</body>
+</html>
